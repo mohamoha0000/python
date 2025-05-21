@@ -65,3 +65,11 @@ def start_server():
 
 if __name__ == '__main__':
     start_server()
+
+
+
+
+
+#https://chatgpt.com/share/682c7013-46fc-8004-b3b1-56a6a7b04f22
+#cloudflared tunnel --url http://localhost:8880
+#.\cloudflared tunnel --url http://localhost:8880

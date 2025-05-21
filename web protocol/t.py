@@ -1,10 +1,15 @@
-from flask import Flask
+# from flask import Flask
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return 'Hello, World!'
+# @app.route('/')
+# def home():
+#     return 'Hello, World!'
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8880, debug=True)
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=8880, debug=True)
+
+import requests
+
+
+print(requests.get("http://192.168.1.58").text)
