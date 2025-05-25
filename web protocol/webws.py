@@ -21,12 +21,20 @@ def relay(src, dst):
 def handle_client(client_socket, client_addr):
     print(f"New client from {client_addr}")
     try:
+        http_response = (
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/plain\r\n"
+        "Content-Length: 13\r\n"
+        "\r\n"
+        "Hello, world!")
         # استقبل طلب الترقية من العميل
         request = client_socket.recv(4096).decode(errors="ignore")
-        if "Upgrade: websocket" not in request:
+        print(request)
+        if "ebsocket" not in request:
+            client_socket.send(http_response.encode())
             print("Not a WebSocket upgrade request.")
             client_socket.close()
-            return
+            return "200"
 
         print("[*] WebSocket upgrade requested.")
 

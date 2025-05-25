@@ -10,10 +10,15 @@ proxy_port = 80
 
 
 host_header = "ssh-fr-1.vpnv.cc"
-#host_header="meayouf.M.crabdance.com:80"
-"""host_header="meayouf2.global.ssl.fastly.net:80"
-host_header="proxyhttp-mmgp.onrender.com:80"
-host_header ="meayouf.zapto.org:80"""
+#host_header="meayouf.M.crabdance.com"
+#host_header="meayouf2.global.ssl.fastly.net:80"
+#host_header="proxyhttp-mmgp.onrender.com:80"
+#host_header="shortline.proxy.rlwy.net:32094"
+#host_header="websoket-production.up.railway.app"
+#host_header ="meayouf.ddns.net"
+#host_header="meayouf.ip-ddns.com:80"
+
+host_header="ssh.meayouf.ip-ddns.com:80"
 payload = (
     "GET / HTTP/1.1\r\n"
     f"Host: {host_header}\r\n"
