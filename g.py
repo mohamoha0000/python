@@ -1,81 +1,101 @@
 import pygame
-import math
+import sys
 
 # Initialize Pygame
 pygame.init()
 
-# Screen settings
+# Set up some constants
 WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("2D Shooter Game")
+PLAYER_SIZE = 50
+MIN_PLAYER_SIZE = 20
+JUMP_HEIGHT = 15
+GRAVITY = 1
 
-# Colors
+# Define some colors
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-BLUE = (0, 0, 255)
 
-# Player settings
-player_pos = [WIDTH // 2, HEIGHT // 2]
-player_size = 20
-player_speed = 5
+class Player(pygame.Rect):
+    def __init__(self):
+        super().__init__(WIDTH / 2, HEIGHT - PLAYER_SIZE * 3, PLAYER_SIZE, PLAYER_SIZE)
+        self.speed_x = 5
+        self.speed_y = 0
 
-# Bullet (fireball) settings
-bullets = []
-bullet_speed = 10
-bullet_size = 10
+    def move(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.x -= self.speed_x
+        if keys[pygame.K_RIGHT]:
+            self.x += self.speed_x
+        if keys[pygame.K_UP] and self.y > MIN_PLAYER_SIZE:
+            self.y -= JUMP_HEIGHT
+            self.speed_y = -JUMP_HEIGHT
 
-# Game loop variables
-clock = pygame.time.Clock()
-running = True
+    def update(self):
+        self.move()
 
-def draw_player(pos):
-    pygame.draw.rect(screen, BLUE, (pos[0] - player_size // 2, pos[1] - player_size // 2, player_size, player_size))
+def draw_text(text, font_size, x, y):
+    font = pygame.font.Font(None, font_size)
+    text_surface = font.render(text, True, WHITE)
+    screen.blit(text_surface, (x, y))
 
-def draw_bullet(pos):
-    pygame.draw.circle(screen, RED, (int(pos[0]), int(pos[1])), bullet_size // 2)
+def main():
+    global screen
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    clock = pygame.time.Clock()
+    player = Player()
 
-# Main game loop
-while running:
-    # Event handling
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Shoot a bullet towards the mouse position
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            dx = mouse_x - player_pos[0]
-            dy = mouse_y - player_pos[1]
-            distance = math.sqrt(dx**2 + dy**2)
-            if distance != 0:  # Avoid division by zero
-                bullet_vel = [dx / distance * bullet_speed, dy / distance * bullet_speed]
-                bullets.append([player_pos[0], player_pos[1], bullet_vel[0], bullet_vel[1]])
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-    # Player movement
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] and player_pos[1] > player_size:
-        player_pos[1] -= player_speed
-    if keys[pygame.K_s] and player_pos[1] < HEIGHT - player_size:
-        player_pos[1] += player_speed
-    if keys[pygame.K_a] and player_pos[0] > player_size:
-        player_pos[0] -= player_speed
-    if keys[pygame.K_d] and player_pos[0] < WIDTH - player_size:
-        player_pos[0] += player_speed
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            player.y += JUMP_HEIGHT
+            player.speed_y = 0
 
-    # Update bullets
-    for bullet in bullets[:]:
-        bullet[0] += bullet[2]  # Update x position
-        bullet[1] += bullet[3]  # Update y position
-        if bullet[0] < 0 or bullet[0] > WIDTH or bullet[1] < 0 or bullet[1] > HEIGHT:
-            bullets.remove(bullet)
+        screen.fill((0, 0, 0))
 
-    # Draw everything
-    screen.fill(WHITE)  # Background
-    draw_player(player_pos)
-    for bullet in bullets:
-        draw_bullet(bullet)
+        # Draw player
+        draw_text("Epic Clash", 32, WIDTH / 4, HEIGHT / 2)
+        pygame.draw.rect(screen, RED, player)
 
-    pygame.display.flip()
-    clock.tick(60)  # 60 FPS
+        # Move player
+        player.update()
 
-# Quit Pygame
-pygame.quit()
+        # Collision detection with walls and other players
+        if player.colliderect(pygame.Rect(0, HEIGHT - MIN_PLAYER_SIZE * 3, WIDTH, MIN_PLAYER_SIZE * 3)):
+            print("You win!")
+            pygame.quit()
+            sys.exit()
+        for i in range(len(player.players)):
+            player1 = player.players[i]
+            if player1 != player:
+                dx = player.x - player1.x
+                dy = player.y - player1.y
+                distance = (dx ** 2 + dy ** 2) ** 0.5
+                if distance < PLAYER_SIZE * 2:
+                    print("You lose!")
+                    pygame.quit()
+                    sys.exit()
+
+        # Draw players on the screen
+        for i in range(len(player.players)):
+            player1 = player.players[i]
+            x = player1.x + i * (PLAYER_SIZE + 10)
+            y = player1.y - i * (PLAYER_SIZE + 20)
+
+            pygame.draw.rect(screen, WHITE, (x, y, PLAYER_SIZE, PLAYER_SIZE))
+
+        # Draw arena
+        screen.fill((0, 255, 0))
+        pygame.draw.ellipse(screen, (128, 128, 128), (WIDTH / 2 - 200, HEIGHT / 4, 400, 100))
+
+        pygame.display.flip()
+
+        clock.tick(60)
+
+if __name__ == "__main__":
+    main()
