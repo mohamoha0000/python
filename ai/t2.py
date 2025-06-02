@@ -41,7 +41,6 @@ for epoch in range(epochs):
         # === الخطأ (error) ===
         error = y - target
         total_loss += error ** 2
-
         # === Backpropagation (يدوي بدون مشتقات تفعيل) ===
         # نحسب deltas مباشرة من الخطأ
         dy = error  # لا مشتقة، لأن لا تفعيل
