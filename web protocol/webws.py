@@ -64,7 +64,7 @@ def handle_client(client_socket, client_addr):
 
 def start_proxy():
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listen_socket.bind(("0.0.0.0", 8880))  # نفس بورت HTTP Custom
+    listen_socket.bind(("0.0.0.0", 8080))  # نفس بورت HTTP Custom
     listen_socket.listen(10)
     print("WebSocket proxy is running on port 8880")
 

@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
 
 "ssh -R 80:127.0.0.1:8880 serveo.net"
-
+"ssh -R 80:192.168.1.251:443 serveo.net"
 #https://chatgpt.com/share/682c7013-46fc-8004-b3b1-56a6a7b04f22
 #cloudflared tunnel --url http://localhost:8880
 #.\cloudflared tunnel --url http://localhost:8880

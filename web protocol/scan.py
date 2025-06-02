@@ -4,13 +4,13 @@ from concurrent.futures import ThreadPoolExecutor
 def scan_port(ip, port):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.settimeout(0.1)
+            sock.settimeout(0.2)
             result = sock.connect_ex((ip, port))
             if result == 0:
                 if (port ==80 or port==443) and not "302" in send_payload(ip,port,"GET / HTTP/1.1\r\nHost: [host]\r\nConnection: close\r\n\r\n"):
                     print(f"http://{ip}:80")
                     return True
-                #print(f"{ip}:[+] Port {port} is OPEN")
+                print(f"{ip}:[+] Port {port} is OPEN")
     except Exception as e:
         pass  # Ignore errors silently or log if needed
 
@@ -52,9 +52,9 @@ def scan_ports(ip, start_port=1, end_port=65535, workers=8):
 
 lis="192.168.1."
 for x in range(1,300):
-    scan_ports(lis+str(x), 1, 100, 100)
+    scan_ports(lis+str(x), 1, 100, 200)
 """
 pyload="GET / HTTP/1.1\r\nHost: [host]\r\nConnection: close\r\n\r\n"
 print(send_payload("192.168.1.75",80,pyload))
 """
-#scan_ports("192.168.137.52",1,1000,200)
+#scan_ports("192.168.1.1",1,1000,200)

@@ -18,7 +18,7 @@ host_header = "ssh-fr-1.vpnv.cc"
 #host_header ="meayouf.ddns.net"
 #host_header="meayouf.ip-ddns.com:80"
 
-host_header="ssh.meayouf.ip-ddns.com:80"
+host_header="v2.meayouf.ip-ddns.com"
 payload = (
     "GET / HTTP/1.1\r\n"
     f"Host: {host_header}\r\n"
