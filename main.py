@@ -6,7 +6,8 @@ from email.mime.multipart import MIMEMultipart
 smtp_server = "smtp-relay.brevo.com"
 smtp_port = 587
 smtp_login = "8f5763001@smtp-brevo.com"
-smtp_password = "xsmtpsib-5a1c7cf8daaa95e8809c5e3bcc62f2e9cd54244a14fbac10de9c10cd5166758a-A19KHYtEDfhrbSxd"
+"xsmtpsib-5a1c7cf8daaa95e8809c5e3bcc62f2e9cd54244a14fbac10de9c10cd5166758a-A19KHYtEDfhrbSxd"
+smtp_password = ""
 
 # إعداد البريد
 sender_email = "moham3iof@gmail.com"  # يجب أن يكون بريد فعّال في حساب Brevo
