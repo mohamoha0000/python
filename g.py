@@ -1,101 +1,68 @@
-import pygame
-import sys
+import requests
+from bs4 import BeautifulSoup
 
-# Initialize Pygame
-pygame.init()
+# الكلمات المفتاحية للوظائف بالإنجليزية والفرنسية
+keywords = [
+    "jobs", "careers", "employment", "vacancies", "hiring", "recruitment", "work",
+    "opportunities", "join-us", "apply",
+    "emploi", "carrière", "offres-emploi", "postes-vacants", "recrutement",
+    "travail", "opportunités", "candidatures", "rejoindre", "embauche"
+]
 
-# Set up some constants
-WIDTH, HEIGHT = 800, 600
-PLAYER_SIZE = 50
-MIN_PLAYER_SIZE = 20
-JUMP_HEIGHT = 15
-GRAVITY = 1
+# قائمة المواقع لفحصها
+sites = [
+    "http://ondima.ma/",
+    "https://northwebmedia.com/",
+    "https://www.americaneagle.com/",
+    "https://yeswelcome.ma/",
+    "https://devtitechnologie.com/",
+    "https://dijinord.com/contact/",
+    "https://map-concepts.com/",
+    "https://devnetcorp.com/",
+    "http://mobicentrum.com/",
+    "https://www.tingisweb.com/",
+    "https://onnvision.com/",
+    "https://nostrum.ma/",
+    "https://webessource.com/",
+    "https://devoratech.com/",
+    "https://www.growthmarketingsolutions.ma/"
+]
 
-# Define some colors
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
+headers = {
+    "User-Agent": "Mozilla/5.0 (compatible; JobLinkFinder/1.0; +https://yourdomain.com)"
+}
 
-class Player(pygame.Rect):
-    def __init__(self):
-        super().__init__(WIDTH / 2, HEIGHT - PLAYER_SIZE * 3, PLAYER_SIZE, PLAYER_SIZE)
-        self.speed_x = 5
-        self.speed_y = 0
-
-    def move(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.x -= self.speed_x
-        if keys[pygame.K_RIGHT]:
-            self.x += self.speed_x
-        if keys[pygame.K_UP] and self.y > MIN_PLAYER_SIZE:
-            self.y -= JUMP_HEIGHT
-            self.speed_y = -JUMP_HEIGHT
-
-    def update(self):
-        self.move()
-
-def draw_text(text, font_size, x, y):
-    font = pygame.font.Font(None, font_size)
-    text_surface = font.render(text, True, WHITE)
-    screen.blit(text_surface, (x, y))
-
-def main():
-    global screen
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    clock = pygame.time.Clock()
-    player = Player()
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            player.y += JUMP_HEIGHT
-            player.speed_y = 0
-
-        screen.fill((0, 0, 0))
-
-        # Draw player
-        draw_text("Epic Clash", 32, WIDTH / 4, HEIGHT / 2)
-        pygame.draw.rect(screen, RED, player)
-
-        # Move player
-        player.update()
-
-        # Collision detection with walls and other players
-        if player.colliderect(pygame.Rect(0, HEIGHT - MIN_PLAYER_SIZE * 3, WIDTH, MIN_PLAYER_SIZE * 3)):
-            print("You win!")
-            pygame.quit()
-            sys.exit()
-        for i in range(len(player.players)):
-            player1 = player.players[i]
-            if player1 != player:
-                dx = player.x - player1.x
-                dy = player.y - player1.y
-                distance = (dx ** 2 + dy ** 2) ** 0.5
-                if distance < PLAYER_SIZE * 2:
-                    print("You lose!")
-                    pygame.quit()
-                    sys.exit()
-
-        # Draw players on the screen
-        for i in range(len(player.players)):
-            player1 = player.players[i]
-            x = player1.x + i * (PLAYER_SIZE + 10)
-            y = player1.y - i * (PLAYER_SIZE + 20)
-
-            pygame.draw.rect(screen, WHITE, (x, y, PLAYER_SIZE, PLAYER_SIZE))
-
-        # Draw arena
-        screen.fill((0, 255, 0))
-        pygame.draw.ellipse(screen, (128, 128, 128), (WIDTH / 2 - 200, HEIGHT / 4, 400, 100))
-
-        pygame.display.flip()
-
-        clock.tick(60)
+def find_job_links(site):
+    print(f"Checking site: {site}")
+    try:
+        resp = requests.get(site, headers=headers, timeout=10)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        links = soup.find_all("a", href=True)
+        found_links = set()
+        for link in links:
+            href = link['href'].lower()
+            for kw in keywords:
+                if kw in href:
+                    # طباعة الرابط بشكل كامل
+                    if href.startswith("http"):
+                        found_links.add(href)
+                    else:
+                        # بناء رابط كامل لو الرابط نسبي
+                        from urllib.parse import urljoin
+                        full_url = urljoin(site, href)
+                        found_links.add(full_url)
+                    break
+        if found_links:
+            print(f"Found job-related links on {site}:")
+            for l in found_links:
+                print("  -", l)
+        else:
+            print("No job-related links found.")
+    except Exception as e:
+        print(f"Error checking {site}: {e}")
 
 if __name__ == "__main__":
-    main()
+    for s in sites:
+        find_job_links(s)
+        print("-" * 50)
